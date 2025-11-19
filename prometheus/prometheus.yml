@@ -1,0 +1,156 @@
+# Prometheus Configuration for EduCRM Microservices
+# Monitors all Phase 1-4 services
+
+global:
+  scrape_interval: 15s # How frequently to scrape targets
+  evaluation_interval: 15s # How frequently to evaluate rules
+  external_labels:
+    cluster: 'educrm-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # =============================================
+  # PHASE 3: AI-ENABLED SERVICES
+  # =============================================
+
+  # Business Intelligence Service
+  - job_name: 'business-intelligence'
+    static_configs:
+      - targets: ['business-intelligence:3010']
+        labels:
+          service: 'business-intelligence'
+          phase: 'phase3'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # AI Analytics Service
+  - job_name: 'ai-analytics'
+    static_configs:
+      - targets: ['ai-analytics:3012']
+        labels:
+          service: 'ai-analytics'
+          phase: 'phase3'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Automated Alerts Service
+  - job_name: 'automated-alerts'
+    static_configs:
+      - targets: ['automated-alerts:3013']
+        labels:
+          service: 'automated-alerts'
+          phase: 'phase3'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # CRM Service
+  - job_name: 'crm'
+    static_configs:
+      - targets: ['crm:3014']
+        labels:
+          service: 'crm'
+          phase: 'phase3'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Alumni Management Service
+  - job_name: 'alumni'
+    static_configs:
+      - targets: ['alumni:3015']
+        labels:
+          service: 'alumni'
+          phase: 'phase3'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # =============================================
+  # PHASE 4: OPTIMIZATION & INNOVATION
+  # =============================================
+
+  # GraphQL API Gateway
+  - job_name: 'graphql-gateway'
+    static_configs:
+      - targets: ['graphql-gateway:4000']
+        labels:
+          service: 'graphql-gateway'
+          phase: 'phase4'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Payment Gateway Integration
+  - job_name: 'payment-gateway'
+    static_configs:
+      - targets: ['payment-gateway:4004']
+        labels:
+          service: 'payment-gateway'
+          phase: 'phase4'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # =============================================
+  # INFRASTRUCTURE
+  # =============================================
+
+  # PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          type: 'database'
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          type: 'cache'
+
+  # NGINX
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          service: 'nginx'
+          type: 'gateway'
+
+  # Node Exporter (System metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+          type: 'infrastructure'
+
+  # =============================================
+  # MONITORING STACK
+  # =============================================
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+          type: 'monitoring'
+
+  # Grafana
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+        labels:
+          service: 'grafana'
+          type: 'visualization'
