@@ -1902,3 +1902,31 @@ volumes:
 networks:
   educrm-network:
     driver: bridge
+
+  # =========================================
+  # FRONTEND APPLICATION
+  # =========================================
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: educrm-frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost}
+      - NEXT_PUBLIC_STUDENT_SERVICE_URL=http://student-information-service:4100
+      - NEXT_PUBLIC_ATTENDANCE_SERVICE_URL=http://attendance-management-service:4101
+      - NEXT_PUBLIC_FEE_SERVICE_URL=http://fee-management-service:4140
+      - NEXT_PUBLIC_GRADEBOOK_SERVICE_URL=http://gradebook-service:4111
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3001}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - student-information-service
+      - attendance-management-service
+      - fee-management-service
+    networks:
+      - educrm-network
+    restart: unless-stopped
