@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, authorize, enforceSchoolIsolation } = require('../../../shared/middleware/auth');
 const dashboardController = require('../controllers/dashboard.controller');
+const reportController = require('../controllers/report.controller');
 
 /**
  * Business Intelligence Service Routes
@@ -60,6 +61,49 @@ router.delete('/dashboards/:id',
 // Get dashboard data (with widget values)
 router.get('/dashboards/:id/data',
   dashboardController.getDashboardData.bind(dashboardController)
+);
+
+// =============================================
+// REPORT ROUTES
+// =============================================
+
+// Report CRUD (Admins and Teachers can manage)
+router.post('/reports',
+  authorize('admin', 'teacher'),
+  reportController.createReport.bind(reportController)
+);
+
+router.get('/reports',
+  reportController.listReports.bind(reportController)
+);
+
+router.get('/reports/:id',
+  reportController.getReport.bind(reportController)
+);
+
+router.put('/reports/:id',
+  authorize('admin', 'teacher'),
+  reportController.updateReport.bind(reportController)
+);
+
+router.delete('/reports/:id',
+  authorize('admin'),
+  reportController.deleteReport.bind(reportController)
+);
+
+// Generate report
+router.post('/reports/:id/generate',
+  authorize('admin', 'teacher'),
+  reportController.generateReport.bind(reportController)
+);
+
+// Report executions
+router.get('/reports/executions',
+  reportController.getReportExecutions.bind(reportController)
+);
+
+router.get('/reports/executions/:id/download',
+  reportController.downloadReport.bind(reportController)
 );
 
 module.exports = router;
