@@ -1,11 +1,14 @@
 {
   "name": "attendance-management-service",
   "version": "1.0.0",
-  "description": "Attendance Management - Track and manage student attendance",
+  "description": "Manages student attendance tracking, daily attendance, and attendance reports",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -13,7 +16,14 @@
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
     "joi": "^17.11.0",
+    "pg": "^8.11.3",
+    "redis": "^4.6.11",
     "uuid": "^9.0.1",
-    "moment": "^2.29.4"
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.10"
   }
 }
