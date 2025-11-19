@@ -9,12 +9,19 @@ const logger = require('./shared/utils/logger');
 const errorHandler = require('./shared/middleware/errorHandler');
 const { healthCheck } = require('./shared/config/database');
 
-// Import service routes
+// Import Phase 1 service routes (Core Student Services)
 const sisRoutes = require('./services/sis/routes');
 const attendanceRoutes = require('./services/attendance/routes');
 const gatePassRoutes = require('./services/gate-pass/routes');
 const learnerProfileRoutes = require('./services/learner-profile/routes');
 const loginStatsRoutes = require('./services/login-stats/routes');
+
+// Import Phase 2 service routes (Academic Services)
+const subjectRoutes = require('./services/subject/routes');
+const gradebookRoutes = require('./services/gradebook/routes');
+const examinationRoutes = require('./services/examination/routes');
+const assignmentRoutes = require('./services/assignment/routes');
+const timetableRoutes = require('./services/timetable/routes');
 
 // Initialize Express app
 const app = express();
@@ -67,11 +74,20 @@ app.get('/', (req, res) => {
 
 // Mount service routes
 const apiVersion = process.env.API_VERSION || 'v1';
+
+// Phase 1: Core Student Services
 app.use(`/api/${apiVersion}/students`, sisRoutes);
 app.use(`/api/${apiVersion}/attendance`, attendanceRoutes);
 app.use(`/api/${apiVersion}/gate-pass`, gatePassRoutes);
 app.use(`/api/${apiVersion}/learner-profile`, learnerProfileRoutes);
 app.use(`/api/${apiVersion}/analytics`, loginStatsRoutes);
+
+// Phase 2: Academic Services
+app.use(`/api/${apiVersion}/subjects`, subjectRoutes);
+app.use(`/api/${apiVersion}/gradebook`, gradebookRoutes);
+app.use(`/api/${apiVersion}/examinations`, examinationRoutes);
+app.use(`/api/${apiVersion}/assignments`, assignmentRoutes);
+app.use(`/api/${apiVersion}/timetable`, timetableRoutes);
 
 // 404 handler
 app.use((req, res) => {
