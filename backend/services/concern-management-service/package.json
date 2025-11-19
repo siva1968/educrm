@@ -1,0 +1,16 @@
+{
+  "name": "concern-management-service",
+  "version": "1.0.0",
+  "description": "Concern Management Service - Issue tracking, complaint handling, resolution workflow, escalation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1"
+  }
+}

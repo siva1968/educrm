@@ -1,0 +1,16 @@
+{
+  "name": "alumni-service",
+  "version": "1.0.0",
+  "description": "Alumni Service - Alumni directory, events, networking, donations",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1"
+  }
+}

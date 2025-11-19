@@ -1,0 +1,16 @@
+{
+  "name": "sqaa-service",
+  "version": "1.0.0",
+  "description": "SQAA Service - Quality assurance, audit management, compliance tracking, standards",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1"
+  }
+}

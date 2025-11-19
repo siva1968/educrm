@@ -1,0 +1,8 @@
+{
+  "name": "assignment-service",
+  "version": "1.0.0",
+  "description": "Assignment Management Service",
+  "main": "app.js",
+  "scripts": {"start": "node app.js"},
+  "dependencies": {"express": "^4.18.2", "cors": "^2.8.5", "helmet": "^7.1.0", "uuid": "^9.0.1"}
+}

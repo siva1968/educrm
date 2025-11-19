@@ -1,0 +1,14 @@
+{
+  "name": "student-gatepass-service",
+  "version": "1.0.0",
+  "description": "Student Gate Pass Management - Issue and track gate passes",
+  "main": "app.js",
+  "scripts": {"start": "node app.js"},
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1",
+    "moment": "^2.29.4"
+  }
+}

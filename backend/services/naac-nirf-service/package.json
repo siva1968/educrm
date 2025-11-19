@@ -1,0 +1,16 @@
+{
+  "name": "naac-nirf-service",
+  "version": "1.0.0",
+  "description": "NAAC & NIRF Service - Accreditation management, ranking data, compliance reports, documentation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1"
+  }
+}
