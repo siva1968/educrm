@@ -1,0 +1,365 @@
+version: '3.8'
+
+# =============================================
+# Phase 3: AI-Enabled Services Stack
+# Complete Docker Compose Configuration
+# =============================================
+
+services:
+  # =============================================
+  # DATABASE SERVICES
+  # =============================================
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: educrm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-educrm}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: educrm-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================
+  # PHASE 3 MICROSERVICES
+  # =============================================
+
+  business-intelligence:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-bi-service
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET}
+      BUSINESS_INTELLIGENCE_PORT: 3010
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+    ports:
+      - "3010:3010"
+    volumes:
+      - ./backend/services/business-intelligence:/app/business-intelligence
+      - bi_storage:/app/storage
+      - bi_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3010/api/v1/bi/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  ai-analytics:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-ai-analytics
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      AI_ANALYTICS_PORT: 3012
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      AI_CONFIDENCE_THRESHOLD: ${AI_CONFIDENCE_THRESHOLD:-0.75}
+      AI_MODEL_STORAGE_PATH: /app/storage/models
+    ports:
+      - "3012:3012"
+    volumes:
+      - ./backend/services/ai-analytics:/app/ai-analytics
+      - ai_models:/app/storage/models
+      - ai_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3012/api/v1/analytics/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  automated-alerts:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-alerts
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      ALERTS_PORT: 3013
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+    ports:
+      - "3013:3013"
+    volumes:
+      - ./backend/services/automated-alerts:/app/automated-alerts
+      - alerts_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3013/api/v1/alerts/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  crm:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-crm
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      CRM_PORT: 3014
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+    ports:
+      - "3014:3014"
+    volumes:
+      - ./backend/services/crm:/app/crm
+      - crm_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3014/api/v1/crm/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  alumni:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-alumni
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      ALUMNI_PORT: 3015
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+    ports:
+      - "3015:3015"
+    volumes:
+      - ./backend/services/alumni:/app/alumni
+      - alumni_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - educrm-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3015/api/v1/alumni/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # =============================================
+  # BACKGROUND WORKERS
+  # =============================================
+
+  alert-worker:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-alert-worker
+    restart: unless-stopped
+    command: ["node", "automated-alerts/workers/alert-evaluator.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      CONTINUOUS_MODE: "true"
+      ALERT_EVALUATION_INTERVAL: ${ALERT_EVALUATION_INTERVAL:-21600000}
+    volumes:
+      - ./backend/services/automated-alerts:/app/automated-alerts
+      - worker_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      automated-alerts:
+        condition: service_healthy
+    networks:
+      - educrm-network
+
+  report-worker:
+    build:
+      context: ./backend/services
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: educrm-report-worker
+    restart: unless-stopped
+    command: ["node", "business-intelligence/workers/report-queue-worker.js"]
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-educrm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REPORT_QUEUE_CONCURRENCY: ${REPORT_QUEUE_CONCURRENCY:-5}
+    volumes:
+      - ./backend/services/business-intelligence:/app/business-intelligence
+      - bi_storage:/app/storage
+      - worker_logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      business-intelligence:
+        condition: service_healthy
+    networks:
+      - educrm-network
+
+  # =============================================
+  # OPTIONAL: NGINX API GATEWAY
+  # =============================================
+
+  nginx:
+    image: nginx:alpine
+    container_name: educrm-gateway
+    restart: unless-stopped
+    ports:
+      - "${GATEWAY_PORT:-80}:80"
+      - "${GATEWAY_SSL_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - business-intelligence
+      - ai-analytics
+      - automated-alerts
+      - crm
+      - alumni
+    networks:
+      - educrm-network
+    profiles:
+      - gateway
+
+# =============================================
+# VOLUMES
+# =============================================
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  bi_storage:
+    driver: local
+  bi_logs:
+    driver: local
+  ai_models:
+    driver: local
+  ai_logs:
+    driver: local
+  alerts_logs:
+    driver: local
+  crm_logs:
+    driver: local
+  alumni_logs:
+    driver: local
+  worker_logs:
+    driver: local
+
+# =============================================
+# NETWORKS
+# =============================================
+
+networks:
+  educrm-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
