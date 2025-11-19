@@ -7,6 +7,9 @@ const {
   listReportsQuerySchema,
   reportExecutionQuerySchema
 } = require('../validators/report.validator');
+const pool = require('../../../shared/config/database');
+const fs = require('fs');
+const { NotFoundError } = require('../../../shared/utils/errors');
 
 /**
  * Report Controller

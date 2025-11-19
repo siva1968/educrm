@@ -1,0 +1,32 @@
+{
+  "name": "alumni-service",
+  "version": "1.0.0",
+  "description": "Alumni Management Service - Profiles, Events, Donations, and Mentorship",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest --coverage"
+  },
+  "keywords": [
+    "alumni",
+    "events",
+    "donations",
+    "mentorship",
+    "fundraising"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "joi": "^17.11.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  }
+}
