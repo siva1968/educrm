@@ -28,7 +28,7 @@ class TimetableController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const config = await timetableService.createConfig(value, userId);
 
       return ApiResponse.success(res, config, 'Configuration created successfully', 201);
@@ -70,7 +70,7 @@ class TimetableController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const config = await timetableService.updateConfig(req.params.id, value, userId);
 
       return ApiResponse.success(res, config, 'Configuration updated successfully');
@@ -90,7 +90,7 @@ class TimetableController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const entry = await timetableService.createTimetableEntry(value, userId);
 
       return ApiResponse.success(res, entry, 'Timetable entry created successfully', 201);
@@ -110,7 +110,7 @@ class TimetableController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const result = await timetableService.batchCreateTimetable(value, userId);
 
       return ApiResponse.success(res, result, 'Timetable created/updated successfully', 201);
@@ -184,7 +184,7 @@ class TimetableController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const entry = await timetableService.updateTimetableEntry(
         req.params.id,
         value,

@@ -31,7 +31,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const examination = await examinationService.createExamination(value, userId);
 
       return ApiResponse.success(
@@ -98,7 +98,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const examination = await examinationService.updateExamination(
         req.params.id,
         value,
@@ -127,7 +127,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const schedule = await examinationService.addExamSchedule(value, userId);
 
       return ApiResponse.success(
@@ -170,7 +170,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const schedule = await examinationService.updateExamSchedule(
         req.params.scheduleId,
         value,
@@ -194,7 +194,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const result = await examinationService.recordResult(value, userId);
 
       return ApiResponse.success(res, result, 'Exam result recorded successfully', 201);
@@ -214,7 +214,7 @@ class ExaminationController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const result = await examinationService.recordBatchResults(value, userId);
 
       return ApiResponse.success(

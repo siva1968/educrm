@@ -28,7 +28,7 @@ class GradeBookController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const assessment = await gradebookService.createAssessment(value, userId);
 
       return ApiResponse.success(
@@ -90,7 +90,7 @@ class GradeBookController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const assessment = await gradebookService.updateAssessment(
         req.params.id,
         value,
@@ -114,7 +114,7 @@ class GradeBookController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const grade = await gradebookService.recordGrade(value, userId);
 
       return ApiResponse.success(res, grade, 'Grade recorded successfully', 201);
@@ -134,7 +134,7 @@ class GradeBookController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const result = await gradebookService.recordBatchGrades(value, userId);
 
       return ApiResponse.success(res, result, 'Batch grades recorded successfully', 201);
@@ -181,7 +181,7 @@ class GradeBookController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const grade = await gradebookService.updateGrade(req.params.gradeId, value, userId);
 
       return ApiResponse.success(res, grade, 'Grade updated successfully');

@@ -29,7 +29,7 @@ class AssignmentController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const assignment = await assignmentService.createAssignment(value, userId);
 
       return ApiResponse.success(
@@ -96,7 +96,7 @@ class AssignmentController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const assignment = await assignmentService.updateAssignment(
         req.params.id,
         value,
@@ -115,7 +115,7 @@ class AssignmentController {
    */
   async deleteAssignment(req, res, next) {
     try {
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const result = await assignmentService.deleteAssignment(req.params.id, userId);
 
       return ApiResponse.success(res, result, 'Assignment deleted successfully');
@@ -140,7 +140,7 @@ class AssignmentController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const submission = await assignmentService.submitAssignment(value, userId);
 
       return ApiResponse.success(
@@ -208,7 +208,7 @@ class AssignmentController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
       const submission = await assignmentService.gradeSubmission(
         req.params.submissionId,
         value,

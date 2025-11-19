@@ -29,8 +29,7 @@ class SubjectController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      // TODO: Get user ID from auth middleware
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
 
       const subject = await subjectService.createSubject(value, userId);
 
@@ -105,7 +104,7 @@ class SubjectController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
 
       const subject = await subjectService.updateSubject(req.params.id, value, userId);
 
@@ -126,7 +125,7 @@ class SubjectController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
 
       const result = await subjectService.deleteSubject(value.subject_id, userId);
 
@@ -153,7 +152,7 @@ class SubjectController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
 
       const syllabus = await subjectService.addSyllabus(value, userId);
 
@@ -205,7 +204,7 @@ class SubjectController {
         return ApiResponse.validationError(res, error.details);
       }
 
-      const userId = req.user?.userId || 'system';
+      const userId = req.user.userId;
 
       const syllabus = await subjectService.updateSyllabus(
         req.params.syllabusId,
