@@ -106,7 +106,7 @@ if (require.main === module) {
   server = app.listen(PORT, () => {
     console.log('');
     console.log('============================================');
-    console.log(`   ${toTitleCase(serviceName)}`);
+    console.log('   FEE MANAGEMENT SERVICE');
     console.log('============================================');
     console.log(`   Status: Running`);
     console.log(`   Port: ${PORT}`);
